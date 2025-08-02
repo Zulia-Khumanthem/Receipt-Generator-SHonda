@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <link rel="stylesheet" type="text/css" href="style.css" />
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Receipt Generator</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.9.2/html2pdf.bundle.min.js"></script>
+
+    <script src="script.js" defer></script>
+  </head>
+  <body id="app">
+    <div class="app-container">
+      <h1>SANGAI HONDA</h1>
+      <h3>Receipt Information:</h3>
+      <div class="form-section" id="receiptForm">
+        <div class="form-row">
+          <div class="form-group">
+            <label for="businessName">Business Name</label>
+            <input
+              type="text"
+              id="businessName"
+              name="businessName"
+              placeholder
+              value="Oriental Vision Enterprises Pvt. Ltd."
+            />
+          </div>
+          <div class="form-group">
+            <label for="gstin">GSTIN</label>
+            <input
+              type="text"
+              id="gstin"
+              placeholder
+              name="gstin"
+              value="14AACCO0030B1ZH"
+            />
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="businessAddress"> Address</label>
+            <textarea
+              id="businessAddress"
+              name="businessAddress"
+              rows="2"
+              placeholder
+            >
+Ghari Airport Road,Imphal,Manipur-795001</textarea
+            >
+          </div>
+          <div class="form-group">
+            <label for="contactNo">Contact Number</label>
+            <input
+              type="tel"
+              id="contactNo"
+              name="companyContactNumber"
+              placeholder
+              value="+91 "
+            />
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="receiptNumber">Receipt No.</label>
+            <input
+              type="text"
+              id="receiptNumber"
+              class="receiptNumber"
+              placeholder
+              required
+            />
+          </div>
+        </div>
+
+        <h3>Bill To:</h3>
+        <div class="form-row">
+          <div class="form-group">
+            <label for="customerName">Customer Name</label>
+            <input
+              type="text"
+              id="customerName"
+              class="customerName"
+              placeholder
+              required
+            />
+          </div>
+          <div class="form-group">
+            <label for="customerPhone">Phone Number</label>
+            <input
+              type="tel"
+              id="customerPhone"
+              class="customerPhone"
+              placeholder
+              value="+91"
+              required
+            />
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="customerAddress">Customer Address</label>
+          <textarea
+            id="customerAddress"
+            class="customerAddress"
+            rows="2"
+            placeholder
+          ></textarea>
+        </div>
+
+        <div class="form-group">
+          <label for="date">Payment Method</label>
+          <select name="payment-method" id="payment-method">
+            <option value="Cash">Cash</option>
+            <option value="Card">Card</option>
+            <option value="Gpay">Gpay</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="date">Date</label>
+          <input type="date" id="date" />
+        </div>
+
+        <h3>Items:</h3>
+        <div class="items-container">
+          <div class="form-row item-row">
+            <div class="form-group" style="flex: 2">
+              <label>Item Description</label>
+              <input
+                type="text"
+                class="item-desc"
+                placeholder="Product or service"
+              />
+            </div>
+            <div class="form-group">
+              <label>Quantity</label>
+              <input
+                type="number"
+                class="item-qty"
+                placeholder="1"
+                min="1"
+                value="1"
+              />
+            </div>
+            <div class="form-group">
+              <label>Amount</label>
+              <input
+                type="number"
+                class="item-price"
+                placeholder
+                min="0"
+                step="0.01"
+              />
+            </div>
+          </div>
+        </div>
+
+        <div style="display: flex; justify-content: space-between">
+          <button
+            id="addItemBtn"
+            class="generate-btn"
+            style="width: auto; margin: 10px 0 20px"
+          >
+            + Add Item
+          </button>
+          <button id="totalAMount" style="width: auto; margin: 10px 0 20px">
+            Total Amount: $0.00
+          </button>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="notes">Notes</label>
+            <textarea
+              id="notes"
+              rows="3"
+              placeholder="Additional information..."
+            ></textarea>
+          </div>
+        </div>
+        <!-- <div class="btn-group">
+                <button id="generateBtn" class="generate-btn">Generate Receipt</button>
+            </div> -->
+      </div>
+      <div class="btn-group">
+        <button id="generateBtn" class="generate-btn">Generate Receipt</button>
+      </div>
+
+      <div id="receiptOutput" class="receipt-preview" style="display: none">
+        <div class="receipt-header">
+          <div
+            class="headerContainer"
+            style="display: flex; align-items: center"
+          >
+            <div class="receipt-logo" id="receipt-logo" style="flex: 1"></div>
+            <button
+              onclick="hideReceiptOutput()"
+              class="closeBtn"
+              style="align-self: flex-end"
+            >
+              X
+            </button>
+          </div>
+          <h3 style="margin: 0; padding: 0">SANGAI HONDA</h3>
+          <div class="receipt-title">OFFICIAL RECEIPT</div>
+        </div>
+        <div class="receipt-info">
+          <div>
+            <div>
+              <strong>Receipt No:</strong> <span id="receipt-no">00001</span>
+            </div>
+            <div>
+              <strong>Date:</strong> <span id="receipt-date">01/01/2023</span>
+            </div>
+          </div>
+          <div>
+            <div>
+              <strong>Customer:</strong> <span id="receipt-customer">hi</span>
+            </div>
+            <div>
+              <strong>Phone:</strong>
+              <span id="receipt-phone">+1234567890</span>
+            </div>
+          </div>
+        </div>
+
+        <table class="receipt-details">
+          <thead>
+            <tr>
+              <th>Description</th>
+              <th>Qty</th>
+              <th>Price</th>
+              <th>Amount</th>
+            </tr>
+          </thead>
+          <tbody id="receipt-items">
+            <!-- Items will be inserted here -->
+          </tbody>
+          <tfoot>
+            <tr>
+              <td colspan="3" style="text-align: right">
+                <strong>Subtotal:</strong>
+              </td>
+              <td id="subtotal">$0.00</td>
+            </tr>
+            <tr>
+              <td colspan="3" style="text-align: right">
+                <strong>Total:</strong>
+              </td>
+              <td id="total">$0.00</td>
+            </tr>
+          </tfoot>
+        </table>
+
+        <div class="receipt-footer">
+          <div class="payment-details">
+            <h4>Payment Details</h4>
+            <div>
+              <strong>Amount Paid:</strong> <span id="amount-paid">$0.00</span>
+            </div>
+            <div>
+              <strong>Payment Method:</strong>
+              <span id="display-payment-method"></span>
+            </div>
+          </div>
+
+          <div class="thank-you">Thank you for your business!</div>
+          <div id="receipt-notes">Notes:</div>
+          <div style="margin-top: 20px">
+            For any queries, contact:
+            <span id="receipt-contact">+1234567890</span>
+          </div>
+          <div>GSTIN: <span id="receipt-gstin">14AACCO0030B1ZH</span></div>
+        </div>
+      </div>
+
+      <div class="btn-group" id="actionButtons" style="display: none">
+        <button id="downloadBtn" class="download-btn">Download PDF</button>
+        <button id="whatsappBtn" class="whatsapp-btn" onclick="shareWhatsApp()">
+          Send via WhatsApp
+        </button>
+      </div>
+    </div>
+    <script>
+      // Hide receipt output
+      const hideReceiptOutput = () => {
+        document.getElementById("receiptOutput").style.display = "none";
+        document.getElementById("actionButtons").style.display = "none";
+
+        //set generate button apperance
+        const generateBtnRef = document.getElementById("generateBtn");
+        generateBtnRef.disabled = false;
+        generateBtnRef.style.opacity = "1";
+      };
+    </script>
+  </body>
+</html>
