@@ -196,7 +196,6 @@ Ghari Airport Road,Imphal,Manipur-795001</textarea
           >
             <div class="receipt-logo" id="receipt-logo" style="flex: 1"></div>
             <button
-              onclick="hideReceiptOutput()"
               class="closeBtn"
               style="align-self: flex-end"
             >
@@ -278,22 +277,10 @@ Ghari Airport Road,Imphal,Manipur-795001</textarea
 
       <div class="btn-group" id="actionButtons" style="display: none">
         <button id="downloadBtn" class="download-btn">Download PDF</button>
-        <button id="whatsappBtn" class="whatsapp-btn" onclick="shareWhatsApp()">
+        <button id="whatsappBtn" class="whatsapp-btn">
           Send via WhatsApp
         </button>
       </div>
     </div>
-    <script>
-      // Hide receipt output
-      const hideReceiptOutput = () => {
-        document.getElementById("receiptOutput").style.display = "none";
-        document.getElementById("actionButtons").style.display = "none";
-
-        //set generate button apperance
-        const generateBtnRef = document.getElementById("generateBtn");
-        generateBtnRef.disabled = false;
-        generateBtnRef.style.opacity = "1";
-      };
-    </script>
   </body>
 </html>

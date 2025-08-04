@@ -81,6 +81,9 @@ document.addEventListener("DOMContentLoaded", function () {
       ).textContent = `Total Amount: $${total.toFixed(2)}`;
     });
 
+    // Obj to store the items data
+  let itemsData = [];
+
   // Generate the receipt preview
   function generateReceipt() {
     // Get form values
@@ -114,6 +117,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
     // Process items
     const itemRows = document.querySelectorAll(".item-row");
+    console.log(itemRows);
     const receiptItems = document.getElementById("receipt-items");
     receiptItems.innerHTML = "";
 
@@ -135,6 +139,13 @@ document.addEventListener("DOMContentLoaded", function () {
                 `;
         receiptItems.appendChild(tr);
         subtotal += amount;
+        // Store item data
+        itemsData.push({
+          description: desc,
+          quantity: qty,
+          price: price,
+          amount: amount,
+        });
       }
     });
 
@@ -154,8 +165,26 @@ document.addEventListener("DOMContentLoaded", function () {
     // Show receipt and action buttons
     document.getElementById("receiptOutput").style.display = "block";
     document.getElementById("actionButtons").style.display = "flex";
+
+    console.log("Items Data:", itemsData);
   }
 
+  // Hide receipt output 
+  const hideReceiptOutput = () => {
+        document.getElementById("receiptOutput").style.display = "none";
+        document.getElementById("actionButtons").style.display = "none";
+
+        //set generate button apperance
+        const generateBtnRef = document.getElementById("generateBtn");
+        generateBtnRef.disabled = false;
+        generateBtnRef.style.opacity = "1";
+
+        // Clear items data
+        itemsData = []; // Clear the itemsData array
+      };
+
+  // Add event listener to hide receipt output on click
+  document.querySelector(".closeBtn").addEventListener("click", hideReceiptOutput);
 
 
   // Download as PDF
@@ -173,60 +202,21 @@ document.addEventListener("DOMContentLoaded", function () {
     }, 200); // Wait for DOM update
   }
 
-  // Share via WhatsApp
-  //   function shareWhatsApp() {
-  //     const businessName = document.getElementById("businessName").value;
-  //     const receiptNumber = document.getElementById("receiptNumber").value;
-  //     const total = document.getElementById("total").textContent;
-
-  //     // Create a temporary element to hold text version of receipt
-  //     const tempDiv = document.createElement("div");
-
-  //     // Add receipt details
-  //     tempDiv.innerHTML = `
-  //             *${businessName}* - Receipt #${receiptNumber}
-  //             Total Amount: ${total}
-
-  //             Please find your receipt attached.
-  //             Thank you for your business!
-  //         `;
-
-  //     const message = encodeURIComponent(tempDiv.textContent);
-  //     window.open(`https://wa.me/?text=${message}`, "_blank");
-  //   }
-
-  //   function shareWhatsApp() {
-  //     const form = document.getElementById('receiptOutput');
-  //     form.addEventListener('submit', async (e) => {
-  //       e.preventDefault();
-  //       const formData = new FormData(form);
-  //       console.log("Form data:", formData);
-  //       const res = await fetch('/generate-and-send', {
-  //         method: 'POST',
-  //         body: formData
-  //       });
-  //       const data = await res.json();
-  //       document.getElementById('status').innerText = data.success
-  //         ? 'PDF sent via WhatsApp!'
-  //         : 'Error: ' + data.error;
-  //     });
-  //   }
-
+  // Function to get all form fields
+  // and prepare data for WhatsApp sharing
   const getFields = () => {
     return {
       businessName: document.getElementById("businessName").value,
-      gstin: document.getElementById("gstin").value,
-      businessAddress: document.getElementById("businessAddress").value,
       customerName: document.getElementById("customerName").value,
       customerPhone: document.getElementById("customerPhone").value,
-      customerAddress: document.getElementById("customerAddress").value,
-      date: document.getElementById("date").value,
-      notes: document.getElementById("notes").value,
+      receiptNumber: document.getElementById("receiptNumber").value,
     };
   }
 
+  // Share receipt via WhatsApp 
   function shareWhatsApp() {
     const finalData = getFields()
+    finalData.items = itemsData; // Add items data to finalData
     console.log(finalData)
     fetch("http://localhost:3000/generate-and-send", {
       method: "POST",
@@ -235,3 +225,5 @@ document.addEventListener("DOMContentLoaded", function () {
     }).then((res) => res.json()).then(res => console.log(res)).catch((err) => console.error(err));
   }
 });
+
+
