@@ -8,19 +8,33 @@ const axios = require("axios");
 const twilio = require("twilio");
 const cors = require("cors");
 const puppeteer = require("puppeteer");
+const dotenv = require("dotenv")
+const logo = "http://localhost:3000/asset/images/logo.jpg";
 
+
+dotenv.config();
 const app = express();
 app.use(cors());
 app.use(express.json());
-app.use(express.static("public"));
-
+// app.use(express.static("public"));
+app.use('/asset', express.static(path.join(__dirname, 'asset')));
 const upload = multer();
 
 // Twilio credentials
-const accountSid = "";
-const authToken = "";
+const accountSid = process.env.ACCOUNT_SID;
+const authToken = process.env.AUTH_TOKEN;
 const client = twilio(accountSid, authToken);
 const TWILIO_WHATSAPP = "whatsapp:+14155238886"; // Twilio Sandbox number
+
+// Calculate total price
+function calculate(item){
+  let subTotal = 0;
+
+  item.forEach(i => {
+    subTotal = subTotal + i?.amount * i?.quantity
+  });
+  return subTotal;
+}
 
 // Function to build items table for the receipt
 function buildItemsTable(items) {
@@ -40,8 +54,8 @@ function buildItemsTable(items) {
       <tr>
         <td>${description}</td>
         <td>${quantity}</td>
-        <td>$${price}</td>
-        <td>$${amount}</td>
+        <td>₹${price}</td>
+        <td>₹${amount}</td>
       </tr>
     `;
   }
@@ -67,13 +81,13 @@ function buildItemsTable(items) {
           <td colspan="3" style="text-align: right">
             <strong>Subtotal:</strong>
           </td>
-          <td>$${subtotal}</td>
+          <td>₹${subtotal}</td>
         </tr>
         <tr>
           <td colspan="3" style="text-align: right">
             <strong>Total:</strong>
           </td>
-          <td>$${total}</td>
+          <td>₹${total}</td>
         </tr>
       </tfoot>
     </table>
@@ -179,6 +193,7 @@ function generateHTML({
             class="headerContainer"
             style="display: flex; align-items: center"
           >
+            <img src=${logo} alt="Logo" width="200px"/>
             <div class="receipt-logo" id="receipt-logo" style="flex: 1">${businessName}</div>
           </div>
           <h3 style="margin: 0; padding: 0">SANGAI HONDA</h3>
@@ -190,7 +205,7 @@ function generateHTML({
               <strong>Receipt No:</strong> <span id="receipt-no">${receiptNumber}</span>
             </div>
             <div>
-              <strong>Date:</strong> <span id="receipt-date">${Date.now()}</span>
+              <strong>Date:</strong> <span id="receipt-date">${new Date().toLocaleDateString()}</span>
             </div>
           </div>
           <div>
@@ -210,7 +225,7 @@ function generateHTML({
           <div class="payment-details">
             <h4>Payment Details</h4>
             <div>
-              <strong>Amount Paid:</strong> <span id="amount-paid">$0.00</span>
+              <strong>Amount Paid:</strong> <span id="amount-paid">₹${calculate(items)}</span>
             </div>
             <div>
               <strong>Payment Method:</strong>
@@ -221,7 +236,7 @@ function generateHTML({
           <div class="thank-you">Thank you for your business!</div>
           <div style="margin-top: 20px">
             For any queries, contact:
-            <span id="receipt-contact">+1234567890</span>
+            <span id="receipt-contact">01169320285</span>
           </div>
           <div>GSTIN: <span id="receipt-gstin">14AACCO0030B1ZH</span></div>
         </div>
@@ -268,7 +283,18 @@ app.post("/generate-and-send", upload.none(), async (req, res) => {
       items,
     });
 
-    const browser = await puppeteer.launch();
+    const browser = await puppeteer.launch({
+      args: [
+        "--no-sandbox",
+        "--disable-setuid-sandbox",
+        "--disable-dev-shm-usage",
+        "--disable-accelerated-2d-canvas",
+        "--no-zygote",
+        "--single-process",
+        "--disable-gpu"
+      ],
+      headless: true,
+    });
     const page = await browser.newPage();
     await page.setContent(htmlContent, { waitUntil: "networkidle0" });
     await page.pdf({ path: filepath, format: "A4" });

@@ -21,7 +21,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
   // Helper function to format currency
   function formatCurrency(amount) {
-    return "$" + parseFloat(amount).toFixed(2);
+    return "₹" + parseFloat(amount).toFixed(2);
   }
 
   // Helper function to format date
@@ -56,7 +56,7 @@ document.addEventListener("DOMContentLoaded", function () {
       const total = calculateTotalAmount();
       document.getElementById(
         "totalAMount"
-      ).textContent = `Total Amount: $${total.toFixed(2)}`;
+      ).textContent = `Total Amount: ₹${total.toFixed(2)}`;
     });
   }
 
@@ -78,7 +78,7 @@ document.addEventListener("DOMContentLoaded", function () {
       const total = calculateTotalAmount();
       document.getElementById(
         "totalAMount"
-      ).textContent = `Total Amount: $${total.toFixed(2)}`;
+      ).textContent = `Total Amount: ₹${total.toFixed(2)}`;
     });
 
     // Obj to store the items data
@@ -218,7 +218,7 @@ document.addEventListener("DOMContentLoaded", function () {
     const finalData = getFields()
     finalData.items = itemsData; // Add items data to finalData
     console.log(finalData)
-    fetch("http://localhost:3000/generate-and-send", {
+    fetch(" generate-and-send", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(finalData),
